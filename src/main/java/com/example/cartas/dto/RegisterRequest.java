@@ -1,0 +1,22 @@
+package com.example.cartas.dto;
+
+import jakarta.validation.constraints.*;
+import lombok.Data;
+
+@Data
+public class RegisterRequest {
+    @NotBlank @Size(max = 100)
+    private String firstName;
+
+    @NotBlank @Size(max = 100)
+    private String lastName;
+
+    @NotBlank @Email
+    private String email;
+
+    @NotBlank @Size(min = 8)
+    private String password;
+
+    @NotBlank
+    private String secretKey;
+}
