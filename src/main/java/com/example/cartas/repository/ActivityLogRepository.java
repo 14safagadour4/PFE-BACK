@@ -5,7 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.example.cartas.entity.ActivityLog;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ActivityLogRepository extends JpaRepository<ActivityLog, Long> {
     Page<ActivityLog> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }

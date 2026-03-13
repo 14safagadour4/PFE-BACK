@@ -91,4 +91,72 @@ public class Partner {
     @PrePersist
     void prePersist() { createdAt = LocalDateTime.now(); 
     }
+
+    public Boolean getIsActive() {
+        return this.isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public Boolean getInvitationAccepted() {
+        return this.invitationAccepted;
+    }
+
+    public void setInvitationAccepted(Boolean invitationAccepted) {
+        this.invitationAccepted = invitationAccepted;
+    }
+// --- ID ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    // --- Nom et Prénom ---
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+
+    // --- Email ---
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    // --- Mot de passe ---
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    // --- Rôle ---
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
+
+    // --- Permissions ---
+    public Boolean getCanViewDashboard() { return canViewDashboard; }
+    public void setCanViewDashboard(Boolean canViewDashboard) { this.canViewDashboard = canViewDashboard; }
+
+    public Boolean getCanManageUsers() { return canManageUsers; }
+    public void setCanManageUsers(Boolean canManageUsers) { this.canManageUsers = canManageUsers; }
+
+    public Boolean getCanAddContent() { return canAddContent; }
+    public void setCanAddContent(Boolean canAddContent) { this.canAddContent = canAddContent; }
+
+    public Boolean getCanEditContent() { return canEditContent; }
+    public void setCanEditContent(Boolean canEditContent) { this.canEditContent = canEditContent; }
+
+    public Boolean getCanManageSpecialists() { return canManageSpecialists; }
+    public void setCanManageSpecialists(Boolean canManageSpecialists) { this.canManageSpecialists = canManageSpecialists; }
+
+    public Boolean getCanViewActivityLogs() { return canViewActivityLogs; }
+    public void setCanViewActivityLogs(Boolean canViewActivityLogs) { this.canViewActivityLogs = canViewActivityLogs; }
+
+    public Boolean getCanViewStatistics() { return canViewStatistics; }
+    public void setCanViewStatistics(Boolean canViewStatistics) { this.canViewStatistics = canViewStatistics; }
+
+    // --- Token et Dates ---
+    public String getInvitationToken() { return invitationToken; }
+    public void setInvitationToken(String invitationToken) { this.invitationToken = invitationToken; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
 }

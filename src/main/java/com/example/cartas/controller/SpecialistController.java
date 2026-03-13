@@ -7,21 +7,31 @@ import com.example.cartas.entity.Specialist;
 import com.example.cartas.entity.Specialist.SpecialistStatus;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/specialists")
-@RequiredArgsConstructor
 public class SpecialistController {
 
     private final SpecialistRepository repo;
     private final ActivityLogService   logService;
     private final JwtService           jwt;
+
+    public SpecialistController(SpecialistRepository repo, ActivityLogService logService, JwtService jwt) {
+        this.repo = repo;
+        this.logService = logService;
+        this.jwt = jwt;
+    }
+
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<Specialist>>> getAll(

@@ -3,7 +3,6 @@ import com.example.cartas.repository.PartnerRepository;
 import com.example.cartas.repository.SuperAdminRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,12 +13,17 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final SuperAdminRepository superAdminRepo;
     private final PartnerRepository partnerRepo;
+
+    public JwtAuthFilter(JwtService jwtService, SuperAdminRepository superAdminRepo, PartnerRepository partnerRepo) {
+        this.jwtService = jwtService;
+        this.superAdminRepo = superAdminRepo;
+        this.partnerRepo = partnerRepo;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest req,

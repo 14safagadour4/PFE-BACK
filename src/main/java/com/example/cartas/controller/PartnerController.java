@@ -6,7 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import com.example.cartas.service.PartnerService;
 import com.example.cartas.repository.RoleRepository;
 import com.example.cartas.security.JwtService;
@@ -16,12 +24,17 @@ import com.example.cartas.entity.Partner;
 @RestController
 @RequestMapping("/api/super-admin/partners")
 @PreAuthorize("hasRole('SUPER_ADMIN')")
-@RequiredArgsConstructor
 public class PartnerController {
 
     private final PartnerService service;
     private final RoleRepository roleRepo;
     private final JwtService     jwt;
+
+    public PartnerController(PartnerService service, RoleRepository roleRepo, JwtService jwt) {
+        this.service = service;
+        this.roleRepo = roleRepo;
+        this.jwt = jwt;
+    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<Partner>>> getAll(
