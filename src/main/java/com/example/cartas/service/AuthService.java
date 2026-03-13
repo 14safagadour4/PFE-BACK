@@ -2,6 +2,7 @@ package com.example.cartas.service;
 
 import com.example.cartas.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,15 +12,22 @@ import com.example.cartas.entity.SuperAdmin;
 import com.example.cartas.dto.AuthResponse;
 import com.example.cartas.dto.LoginRequest;
 import com.example.cartas.dto.RegisterRequest;
+
 @Service
-@RequiredArgsConstructor
+@Slf4j  // Pour les logs
 public class AuthService {
 
     private final SuperAdminRepository saRepo;
-    private final PartnerRepository    partnerRepo;
-    private final JwtService           jwt;
-    private final PasswordEncoder      encoder;
-
+    private final PartnerRepository partnerRepo;
+    private final JwtService jwt;
+    private final PasswordEncoder encoder;
+    public AuthService(SuperAdminRepository saRepo, PartnerRepository partnerRepo, 
+                       JwtService jwt, PasswordEncoder encoder) {
+        this.saRepo = saRepo;
+        this.partnerRepo = partnerRepo;
+        this.jwt = jwt;
+        this.encoder = encoder;
+    }
     @Value("${cartas.activation-key}")
     private String activationKey;
 
@@ -30,25 +38,36 @@ public class AuthService {
 
     // ── Inscription Super Admin (unique) ─────────────
     public AuthResponse register(RegisterRequest req) {
-        if (saRepo.isSuperAdminRegistered())
+        // Vérifications
+        if (saRepo.isSuperAdminRegistered()) {
             throw new RuntimeException("Un Super Admin est déjà enregistré.");
+        }
 
-        if (!activationKey.equals(req.getSecretKey()))
+        if (!activationKey.equals(req.getSecretKey())) {
             throw new RuntimeException("Clé d'activation incorrecte.");
+        }
 
-        if (saRepo.findByEmail(req.getEmail()).isPresent())
+        if (saRepo.findByEmail(req.getEmail()).isPresent()) {
             throw new RuntimeException("Cet email est déjà utilisé.");
+        }
 
+        // Création du Super Admin
         var sa = SuperAdmin.builder()
                 .firstName(req.getFirstName())
                 .lastName(req.getLastName())
                 .email(req.getEmail())
                 .password(encoder.encode(req.getPassword()))
+                .activationKey(req.getSecretKey())
+                .isActive(true)
+                .isFirstLogin(true)
+                .preferredTheme("dark")
                 .build();
+        
         saRepo.save(sa);
+    
 
         return buildAuth(sa.getId(), sa.getEmail(), sa.getFirstName(),
-                         sa.getLastName(), "SUPER_ADMIN", "dark");
+                sa.getLastName(), "SUPER_ADMIN", "dark");
     }
 
     // ── Connexion ────────────────────────────────────
@@ -57,22 +76,29 @@ public class AuthService {
         var saOpt = saRepo.findByEmail(req.getEmail());
         if (saOpt.isPresent()) {
             var sa = saOpt.get();
-            if (!encoder.matches(req.getPassword(), sa.getPassword()))
+            if (!encoder.matches(req.getPassword(), sa.getPassword())) {
                 throw new RuntimeException("Mot de passe incorrect.");
+            }
             return buildAuth(sa.getId(), sa.getEmail(), sa.getFirstName(),
-                             sa.getLastName(), "SUPER_ADMIN", sa.getPreferredTheme());
+                    sa.getLastName(), "SUPER_ADMIN", sa.getPreferredTheme());
         }
 
         // Tentative Partner
         var pOpt = partnerRepo.findByEmail(req.getEmail());
         if (pOpt.isPresent()) {
             var p = pOpt.get();
-            if (!p.getInvitationAccepted() || !p.getIsActive())
+            
+            // Vérifications Partner
+            if (!p.getInvitationAccepted() || !p.getIsActive()) {
                 throw new RuntimeException("Compte inactif ou invitation non acceptée.");
-            if (!encoder.matches(req.getPassword(), p.getPassword()))
+            }
+            
+            if (!encoder.matches(req.getPassword(), p.getPassword())) {
                 throw new RuntimeException("Mot de passe incorrect.");
+            }
+            
             return buildAuth(p.getId(), p.getEmail(), p.getFirstName(),
-                             p.getLastName(), p.getRole().getName(), "dark");
+                    p.getLastName(), p.getRole().getName(), "dark");
         }
 
         throw new RuntimeException("Email introuvable.");
@@ -81,14 +107,22 @@ public class AuthService {
     // ── Construire la réponse auth ───────────────────
     private AuthResponse buildAuth(Long id, String email, String firstName,
                                    String lastName, String role, String theme) {
+        
+        String accessToken = jwt.generateAccessToken(email, role, id);
+        String refreshToken = jwt.generateRefreshToken(email);
+        
         return AuthResponse.builder()
-                .accessToken(jwt.generateAccessToken(email, role, id))
-                .refreshToken(jwt.generateRefreshToken(email))
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .expiresIn(jwt.getAccessExpiration())
                 .user(AuthResponse.UserInfo.builder()
-                        .id(id).firstName(firstName).lastName(lastName)
-                        .email(email).role(role).preferredTheme(theme)
+                        .id(id)
+                        .firstName(firstName)
+                        .lastName(lastName)
+                        .email(email)
+                        .role(role)
+                        .preferredTheme(theme)
                         .build())
                 .build();
     }

@@ -1,20 +1,27 @@
 package com.example.cartas.controller;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import com.example.cartas.service.AuthService;
 import com.example.cartas.dto.AuthResponse;
 import com.example.cartas.dto.LoginRequest;
 import com.example.cartas.dto.RegisterRequest;
 import com.example.cartas.dto.ApiResponse;
+
 @RestController
 @RequestMapping("/api/auth")
-@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     // GET /api/auth/status → true si SA déjà enregistré
     @GetMapping("/status")

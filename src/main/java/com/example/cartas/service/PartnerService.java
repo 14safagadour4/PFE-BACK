@@ -1,16 +1,21 @@
 package com.example.cartas.service;
-import com.example.cartas.repository.PartnerRepository;
-import com.example.cartas.repository.RoleRepository;
-import com.example.cartas.entity.Partner;
-import com.example.cartas.dto.CreatePartnerRequest;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import com.example.cartas.dto.CreatePartnerRequest;
+import com.example.cartas.entity.Partner;
+import com.example.cartas.repository.PartnerRepository;
+import com.example.cartas.repository.RoleRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PartnerService {
 
     private final PartnerRepository partnerRepo;

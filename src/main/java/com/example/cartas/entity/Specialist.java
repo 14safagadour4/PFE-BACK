@@ -1,7 +1,10 @@
 package com.example.cartas.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,7 +42,13 @@ public class Specialist {
     @Column(columnDefinition = "ENUM('PENDING','ACTIVE','BLOCKED') DEFAULT 'PENDING'")
     private SpecialistStatus status = SpecialistStatus.PENDING;
 
+    public SpecialistStatus getStatus() { return status; }
+    public void setStatus(SpecialistStatus status) { this.status = status; }
+
     private LocalDateTime validatedAt;
+
+    public LocalDateTime getValidatedAt() { return validatedAt; }
+    public void setValidatedAt(LocalDateTime validatedAt) { this.validatedAt = validatedAt; }
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
