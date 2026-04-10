@@ -34,6 +34,9 @@ public class ArtTherapist {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
+    @Column(nullable = false)
+    private String password;
+
     @Column(length = 100)
     private String artDiscipline;       // ex: Peinture, Musique, Théâtre...
 
@@ -46,9 +49,12 @@ public class ArtTherapist {
     @Column(length = 500)
     private String certificateUrl;
 
-@Builder.Default
+    @Column(name = "refusal_reason", columnDefinition = "TEXT")
+    private String refusalReason;
+
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('PENDING','ACTIVE','BLOCKED') DEFAULT 'PENDING'")
+    @Column(length = 20)
     private TherapistStatus status = TherapistStatus.PENDING;
 
     private LocalDateTime validatedAt;
@@ -59,5 +65,5 @@ public class ArtTherapist {
     @PrePersist
     void prePersist() { createdAt = LocalDateTime.now(); }
 
-    public enum TherapistStatus { PENDING, ACTIVE, BLOCKED }
+    public enum TherapistStatus { PENDING, ACTIVE, BLOCKED, REFUSED }
 }
