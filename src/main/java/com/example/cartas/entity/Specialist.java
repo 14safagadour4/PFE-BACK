@@ -25,6 +25,9 @@ public class Specialist {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
+    @Column(nullable = false)
+    private String password;
+
     @Column(length = 100)
     private String specialty;
 
@@ -37,9 +40,15 @@ public class Specialist {
     @Column(length = 500)
     private String avatarUrl;
 
+    @Column(length = 500)
+    private String certificateUrl;
+
+    @Column(name = "refusal_reason", columnDefinition = "TEXT")
+    private String refusalReason;
+
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('PENDING','ACTIVE','BLOCKED') DEFAULT 'PENDING'")
+    @Column(length = 20)
     private SpecialistStatus status = SpecialistStatus.PENDING;
 
     public SpecialistStatus getStatus() { return status; }
@@ -56,6 +65,6 @@ public class Specialist {
     @PrePersist
     void prePersist() { createdAt = LocalDateTime.now(); }
 
-    public enum SpecialistStatus { PENDING, ACTIVE, BLOCKED }
+    public enum SpecialistStatus { PENDING, ACTIVE, BLOCKED, REFUSED }
 }
 

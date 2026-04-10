@@ -29,6 +29,9 @@ public class AppUser {
     @Column(length = 20)
     private String phone;
 
+    @Column(nullable = false)
+    private String password;
+
     @Column(length = 500)
     private String avatarUrl;
 

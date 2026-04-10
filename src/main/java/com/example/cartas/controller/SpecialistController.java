@@ -3,6 +3,7 @@ import com.example.cartas.repository.SpecialistRepository;
 import com.example.cartas.service.ActivityLogService;
 import com.example.cartas.security.JwtService;
 import com.example.cartas.dto.ApiResponse;
+import com.example.cartas.dto.RefusalRequest;
 import com.example.cartas.entity.Specialist;
 import com.example.cartas.entity.Specialist.SpecialistStatus;
 
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,5 +59,22 @@ public class SpecialistController {
         logService.log(jwt.extractActorId(token), jwt.extractRole(token),
                 "SPECIALIST_VALIDATED", "Specialist", id, null, null);
         return ResponseEntity.ok(ApiResponse.ok("Spécialiste validé.", null));
+    }
+
+    @PatchMapping("/{id}/refuse")
+    public ResponseEntity<ApiResponse<Void>> refuse(
+            @PathVariable Long id, @RequestBody RefusalRequest req, HttpServletRequest servletReq) {
+        var specialist = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Spécialiste introuvable."));
+        
+        specialist.setStatus(SpecialistStatus.REFUSED);
+        specialist.setRefusalReason(req.getReason());
+        repo.save(specialist);
+
+        String token = servletReq.getHeader("Authorization").substring(7);
+        logService.log(jwt.extractActorId(token), jwt.extractRole(token),
+                "SPECIALIST_REFUSED", "Specialist", id, null, req.getReason());
+
+        return ResponseEntity.ok(ApiResponse.ok("Spécialiste refusé.", null));
     }
 }

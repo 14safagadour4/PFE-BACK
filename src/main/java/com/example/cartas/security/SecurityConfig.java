@@ -38,11 +38,17 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Endpoints publics
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
+                .requestMatchers("/api/plants/**", "/api/plants").permitAll()
                 // Super Admin uniquement
                 .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
+                .requestMatchers("/api/specialists/**", "/api/specialists").hasRole("SUPER_ADMIN")
+                .requestMatchers("/api/art-therapists/**", "/api/art-therapists").hasRole("SUPER_ADMIN")
+                .requestMatchers("/api/users/**", "/api/users").hasRole("SUPER_ADMIN")
                 // Connecté (SA + Partners)
                 .anyRequest().authenticated()
             )
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
@@ -55,7 +61,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(allowedOrigins));
+        config.setAllowedOriginPatterns(List.of("*"));
         config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
